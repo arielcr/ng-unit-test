@@ -23,7 +23,7 @@
             <h2>Your Trip</h2>
             <h4 ng-show="message">{{message}}</h4>
             <div ng-repeat="destination in destinations">
-                <div destination-directive destination="destination" api-key="apiKey" on-remove="removeDestination($index)"></div>
+                <destination-component destination="destination" api-key="apiKey" on-remove="removeDestination($index)"></destination-component>
             </div>
         </section>
     

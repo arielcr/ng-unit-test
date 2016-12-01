@@ -62,44 +62,39 @@ testingAngularApp.service('helperService', function() {
     return this;
 });
 
-
-// Custom directive
-testingAngularApp.directive('destinationDirective', function() {
-    return {
-        scope: {
-            destination: '=',
-            apiKey: '=',
-            onRemove: '&'
-        },
-        template:
-                '<span>{{destination.city}}, {{destination.country}}</span>' +
-                '<span ng-if="destination.weather">' +
-                '    - {{destination.weather.main}}, {{destination.weather.temp}}' +
-                '</span>' +
-                '<button ng-click="onRemove()">Remove</button>' +
-                '<button ng-click="getWeather(destination)">Update Weather</button>',
-        controller: function($http, $rootScope, $scope, helperService){
-
-            $scope.getWeather = function(destination){
-                $http.get("http://api.openweathermap.org/data/2.5/weather?q="+destination.city+"&appid="+$scope.apiKey).then(
-                    function successCallback(response){
-                        if(response.data.weather){
-                            destination.weather = {};
-                            destination.weather.main = response.data.weather[0].main;
-                            destination.weather.temp = helperService.convertKelvinToCelsius(response.data.main.temp);
-                        } else {
-                            $rootScope.message = "City not found";
-                        }
-                    },
-                    function errorCallback(error){
-                        $rootScope.message = "Server Error";
-                        $rootScope.$broadcast('messageUpdated', { type: 'error', message: 'Server error' });
+// Component
+testingAngularApp.component('destinationComponent', {
+    bindings: {
+        destination: '=',
+        apiKey: '=',
+        onRemove: '&'
+    },
+    controller: function($http, $rootScope, $scope, helperService) {
+        this.getWeather = function(destination){
+            $http.get("http://api.openweathermap.org/data/2.5/weather?q="+destination.city+"&appid="+this.apiKey).then(
+                function successCallback(response){
+                    if(response.data.weather){
+                        destination.weather = {};
+                        destination.weather.main = response.data.weather[0].main;
+                        destination.weather.temp = helperService.convertKelvinToCelsius(response.data.main.temp);
+                    } else {
+                        $rootScope.message = "City not found";
                     }
-                );
-            };
-
-        }
-
-    };
-
+                },
+                function errorCallback(error){
+                    $rootScope.message = "Server Error";
+                    $rootScope.$broadcast('messageUpdated', { type: 'error', message: 'Server error' });
+                }
+            );
+        };
+    },
+    template: function($element, $attrs) {
+        return '<span>{{$ctrl.destination.city}}, {{$ctrl.destination.country}}</span>' +
+               '<span ng-if="$ctrl.destination.weather">' +
+               '    - {{$ctrl.destination.weather.main}}, {{$ctrl.destination.weather.temp}}' +
+               '</span>' +
+               '<button ng-click="$ctrl.onRemove()">Remove</button>' +
+               '<button ng-click="$ctrl.getWeather($ctrl.destination)">Update Weather</button>';
+    }
 });
+

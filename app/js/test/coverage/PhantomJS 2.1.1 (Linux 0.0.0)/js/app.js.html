@@ -143,12 +143,7 @@
 98
 99
 100
-101
-102
-103
-104
-105
-106</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+101</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -213,17 +208,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">5×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -245,6 +230,11 @@
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -317,54 +307,49 @@ testingAngularApp.service('helperService', function() {
     return this;
 });
 &nbsp;
-&nbsp;
-// Custom directive
-testingAngularApp.directive('destinationDirective', function() {
-    return {
-        scope: {
-            destination: '=',
-            apiKey: '=',
-            onRemove: '&amp;'
-        },
-        template:
-                '&lt;span&gt;{{destination.city}}, {{destination.country}}&lt;/span&gt;' +
-                '&lt;span ng-if="destination.weather"&gt;' +
-                '    - {{destination.weather.main}}, {{destination.weather.temp}}' +
-                '&lt;/span&gt;' +
-                '&lt;button ng-click="onRemove()"&gt;Remove&lt;/button&gt;' +
-                '&lt;button ng-click="getWeather(destination)"&gt;Update Weather&lt;/button&gt;',
-        controller: function($http, $rootScope, $scope, helperService){
-&nbsp;
-            $scope.getWeather = function(destination){
-                $http.get("http://api.openweathermap.org/data/2.5/weather?q="+destination.city+"&amp;appid="+$scope.apiKey).then(
-                    function successCallback(response){
-                        if(response.data.weather){
-                            destination.weather = {};
-                            destination.weather.main = response.data.weather[0].main;
-                            destination.weather.temp = helperService.convertKelvinToCelsius(response.data.main.temp);
-                        } else {
-                            $rootScope.message = "City not found";
-                        }
-                    },
-                    function errorCallback(error){
-                        $rootScope.message = "Server Error";
-                        $rootScope.$broadcast('messageUpdated', { type: 'error', message: 'Server error' });
+// Component
+testingAngularApp.component('destinationComponent', {
+    bindings: {
+        destination: '=',
+        apiKey: '=',
+        onRemove: '&amp;'
+    },
+    controller: function($http, $rootScope, $scope, helperService) {
+        this.getWeather = function(destination){
+            $http.get("http://api.openweathermap.org/data/2.5/weather?q="+destination.city+"&amp;appid="+this.apiKey).then(
+                function successCallback(response){
+                    if(response.data.weather){
+                        destination.weather = {};
+                        destination.weather.main = response.data.weather[0].main;
+                        destination.weather.temp = helperService.convertKelvinToCelsius(response.data.main.temp);
+                    } else {
+                        $rootScope.message = "City not found";
                     }
-                );
-            };
-&nbsp;
-        }
-&nbsp;
-    };
-&nbsp;
+                },
+                function errorCallback(error){
+                    $rootScope.message = "Server Error";
+                    $rootScope.$broadcast('messageUpdated', { type: 'error', message: 'Server error' });
+                }
+            );
+        };
+    },
+    template: function($element, $attrs) {
+        return '&lt;span&gt;{{$ctrl.destination.city}}, {{$ctrl.destination.country}}&lt;/span&gt;' +
+               '&lt;span ng-if="$ctrl.destination.weather"&gt;' +
+               '    - {{$ctrl.destination.weather.main}}, {{$ctrl.destination.weather.temp}}' +
+               '&lt;/span&gt;' +
+               '&lt;button ng-click="$ctrl.onRemove()"&gt;Remove&lt;/button&gt;' +
+               '&lt;button ng-click="$ctrl.getWeather($ctrl.destination)"&gt;Update Weather&lt;/button&gt;';
+    }
 });
+&nbsp;
 &nbsp;</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Nov 25 2016 21:41:35 GMT-0600 (CST)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Dec 01 2016 15:12:09 GMT-0600 (CST)
 </div>
 </div>
 <script src="../prettify.js"></script>

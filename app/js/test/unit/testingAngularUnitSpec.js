@@ -150,9 +150,9 @@ describe('Testing AngularJS Test Suite => ', function() {
         }));
     });
 
-    describe('Testing AngularJS Directive', function(){
+    describe('Testing AngularJS Component', function(){
 
-        var scope, template, httpBackend, isolateScope, rootScope;
+        var scope, template, httpBackend, rootScope, controller;
 
         // Mock the helper service using $provide, so we'll use this function instead of the one on the service
         beforeEach(function(){
@@ -181,15 +181,15 @@ describe('Testing AngularJS Test Suite => ', function() {
             scope.apiKey = "xyz";
 
             var element = angular.element(
-                '<div destination-directive destination="destination" api-key="apiKey" on-remove="remove()"></div>'
+                '<destination-component destination="destination" api-key="apiKey" on-remove="remove()"></destination-component>'
             );
 
             // Compile the template into JS
             template = $compile(element)(scope);
-            scope.$digest();
+            scope.$apply();
 
-            // Get the directive isolate scope to access the methods
-            isolateScope = element.isolateScope();
+            // Get the directive controller to access the methods
+            controller = element.controller('destinationComponent');
         }));
 
         it('should update the weather for the specific destination', function() {
@@ -217,8 +217,8 @@ describe('Testing AngularJS Test Suite => ', function() {
                     main: {temp: 288}
                 });
 
-            // Access getWeather method throught isolateScope
-            isolateScope.getWeather(scope.destination);
+            // Access getWeather method throught controller
+            controller.getWeather(scope.destination);
 
             // End any http request
             httpBackend.flush();
@@ -240,8 +240,8 @@ describe('Testing AngularJS Test Suite => ', function() {
                 { }
             );
 
-            // Access getWeather method throught isolateScope
-            isolateScope.getWeather(scope.destination);
+            // Access getWeather method throught controller
+            controller.getWeather(scope.destination);
 
             // End any http request
             httpBackend.flush();
@@ -263,8 +263,8 @@ describe('Testing AngularJS Test Suite => ', function() {
             // Mock the http call to simulate the request and attach a response
             httpBackend.expectGET("http://api.openweathermap.org/data/2.5/weather?q="+scope.destination.city+"&appid="+scope.apiKey).respond(500);
 
-            // Access getWeather method throught isolateScope
-            isolateScope.getWeather(scope.destination);
+            // Access getWeather method throught controller
+            controller.getWeather(scope.destination);
 
             // End any http request
             httpBackend.flush();
@@ -286,7 +286,7 @@ describe('Testing AngularJS Test Suite => ', function() {
                 scope.removeTest++;
             };
 
-            isolateScope.onRemove();
+            controller.onRemove();
 
             expect(scope.removeTest).toBe(2);
         }); 
